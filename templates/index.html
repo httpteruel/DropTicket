@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DropTicket | Explore a Batida</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --neon-purple: #bc13fe;
+            --neon-cyan: #01ffff;
+            --dark-bg: #0a0a0c;
+            --card-bg: #16161a;
+        }
+
+        body {
+            background-color: var(--dark-bg);
+            color: #ffffff;
+            font-family: 'Inter', sans-serif;
+        }
+
+        h1, h2, .navbar-brand {
+            font-family: 'Orbitron', sans-serif;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .navbar {
+            background-color: rgba(0, 0, 0, 0.9) !important;
+            border-bottom: 1px solid var(--neon-purple);
+            padding: 1rem 0;
+        }
+
+        .navbar-brand {
+            color: var(--neon-cyan) !important;
+            font-size: 1.5rem;
+        }
+
+        .hero-section {
+            padding: 60px 0;
+            background: linear-gradient(180deg, rgba(188, 19, 254, 0.1) 0%, rgba(10, 10, 12, 1) 100%);
+            text-align: center;
+        }
+
+        .event-card {
+            background-color: var(--card-bg);
+            border: 1px solid #2d2d35;
+            border-radius: 15px;
+            overflow: hidden;
+            transition: transform 0.3s ease, border-color 0.3s ease;
+            height: 100%;
+        }
+
+        .event-card:hover {
+            transform: translateY(-10px);
+            border-color: var(--neon-purple);
+            box-shadow: 0 0 20px rgba(188, 19, 254, 0.3);
+        }
+
+        .card-img-container {
+            height: 200px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .card-img-top {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .date-badge {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: var(--neon-purple);
+            padding: 5px 12px;
+            border-radius: 8px;
+            font-weight: bold;
+            font-size: 0.8rem;
+        }
+
+        .btn-neon {
+            background-color: transparent;
+            border: 2px solid var(--neon-cyan);
+            color: var(--neon-cyan);
+            font-weight: bold;
+            text-transform: uppercase;
+            padding: 10px 20px;
+            transition: all 0.3s;
+        }
+
+        .btn-neon:hover {
+            background-color: var(--neon-cyan);
+            color: #000;
+            box-shadow: 0 0 15px var(--neon-cyan);
+        }
+
+        footer {
+            margin-top: 100px;
+            padding: 40px 0;
+            border-top: 1px solid #2d2d35;
+            color: #666;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar navbar-expand-lg navbar-dark sticky-top">
+        <div class="container">
+            <a class="navbar-brand" href="/">DROP<span>TICKET</span></a>
+        </div>
+    </nav>
+
+    <header class="hero-section">
+        <div class="container">
+            <h1 class="display-4 fw-bold mb-3">Sinta a Vibe</h1>
+            <p class="lead text-secondary">Garanta seu lugar nos melhores festivais.</p>
+        </div>
+    </header>
+
+    <main class="container">
+        <div class="row">
+            {% for evento in eventos %}
+            <div class="col-md-4 mb-4">
+                <div class="event-card">
+                    <div class="card-img-container">
+                        <span class="date-badge">{{ evento.data_inicio|date:"d M" }}</span>
+                        {% if evento.banner %}
+                            <img src="{{ evento.banner.url }}" class="card-img-top" alt="{{ evento.nome }}">
+                        {% else %}
+                            <img src="https://via.placeholder.com/400x200" class="card-img-top" alt="Sem imagem">
+                        {% endif %}
+                    </div>
+                    <div class="card-body p-4">
+                        <h4 class="fw-bold">{{ evento.nome }}</h4>
+                        <p class="text-secondary mb-3"><i class="bi bi-geo-alt"></i> {{ evento.local }}</p>
+                        <div class="d-grid">
+                            <a href="{% url 'detalhe_evento' evento.id %}" class="btn btn-neon">Explorar Evento</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <div class="col-12 text-center py-5">
+                <p class="text-secondary italic">Ainda não há eventos cadastrados. Volte em breve!</p>
+            </div>
+            {% endfor %}
+        </div>
+    </main>
+
+    <footer>
+        <p>&copy; 2026 DropTicket - Transformando experiências em memórias.</p>
+    </footer>
+
+</body>
+</html>
