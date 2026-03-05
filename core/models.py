@@ -2,6 +2,7 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.utils import timezone
 from datetime import timedelta
+import uuid
 
 class Evento(models.Model):
     nome = models.CharField(max_length=200, verbose_name="Nome do Evento")
@@ -93,3 +94,22 @@ class ItemPedido(models.Model):
     def __str__(self):
         tipo = "Ingresso" if self.lote else "Excursão"
         return f"{tipo}: {self.nome_participante}"
+
+class IngressoGerado(models.Model):
+    # Identificador Único (Será usado para gerar o QR Code futuramente)
+    codigo_autenticacao = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    
+    pedido = models.ForeignKey('Pedido', on_delete=models.CASCADE, related_name='ingressos')
+    evento = models.ForeignKey('Evento', on_delete=models.CASCADE)
+    lote = models.ForeignKey('Lote', on_delete=models.PROTECT)
+
+    nome_participante = models.CharField(max_length=100)
+    cpf_participante = models.CharField(max_length=14)
+    rg_participante = models.CharField(max_length=20)
+    email_participante = models.EmailField()
+
+    validado = models.BooleanField(default=False)
+    data_uso = models.DateTimeField(null=True, blank=True)
+
+    def __str__(self):
+        return f"{self.evento.nome} - {self.nome_participante} ({self.codigo_autenticacao})"

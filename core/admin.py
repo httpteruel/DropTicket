@@ -1,16 +1,15 @@
 from django.contrib import admin
 from .models import Evento, Lote, Excursao, Pedido, ItemPedido
 
-# Permite editar lotes dentro da página do Evento
 class LoteInline(admin.TabularInline):
     model = Lote
-    extra = 1 # Quantidade de linhas vazias para novos lotes
+    extra = 1
 
 @admin.register(Evento)
 class EventoAdmin(admin.ModelAdmin):
     list_display = ('nome', 'data_inicio', 'local', 'contato_organizador')
     search_fields = ('nome', 'local')
-    inlines = [LoteInline] # Coloca os lotes "dentro" do evento
+    inlines = [LoteInline]
 
 @admin.register(Excursao)
 class ExcursaoAdmin(admin.ModelAdmin):
@@ -18,7 +17,6 @@ class ExcursaoAdmin(admin.ModelAdmin):
     list_filter = ('evento', 'local_saida')
     search_fields = ('responsavel', 'veiculo_placa')
 
-# Permite ver os itens (ingressos/vagas) dentro do Pedido
 class ItemPedidoInline(admin.TabularInline):
     model = ItemPedido
     extra = 0
