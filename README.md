@@ -5,7 +5,7 @@ O **DropTicket** é um ecossistema para gestão e venda de ingressos focado em e
 ## Status do Projeto
 Atualmente, o projeto conta com:
 - **Painel Administrativo:** Gestão completa de Eventos, Lotes e Excursões.
-- **Home Page:** Vitrine de eventos com design Dark Neon responsivo.
+- **Home Page:** Vitrine de eventos com design responsivo.
 - **Página de Detalhes:** Visualização de informações do evento, integração de lotes e lista de excursões disponíveis.
 
 ## Tecnologias Utilizadas
