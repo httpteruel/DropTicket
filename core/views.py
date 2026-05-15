@@ -1,12 +1,38 @@
-from django.shortcuts import render
-from django.shortcuts import render, get_object_or_404
-from .models import Evento
+from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
+from django.urls import reverse_lazy
+from .models import Evento, Lote, Excursao
 
-def home(request):
-    eventos = Evento.objects.all() # Busca por todos os eventos
-    return render(request, 'index.html', {'eventos': eventos})
+class EventoListView(ListView):
+    model = Evento
+    template_name = 'index.html' 
+    context_object_name = 'eventos'
+    ordering = ['data_inicio']     
 
-def detalhe_evento(request, evento_id):
-    # Busca pelo ID
-    evento = get_object_or_404(Evento, id=evento_id)
-    return render(request, 'detalhe_evento.html', {'evento': evento})
+class EventoDetailView(DetailView):
+    model = Evento
+    template_name = 'detalhe_evento.html'
+    context_object_name = 'evento'
+    slug_field = 'slug'       
+    slug_url_kwarg = 'slug'
+
+    def get_context_data(self, **kwargs):
+        """
+        Método obrigatório exigido pelo professor para passar dados adicionais
+        (Lotes de ingressos e Excursões disponíveis para este evento específico).
+        """
+        context = super().get_context_data(**kwargs)
+        context['lotes'] = self.object.lotes.filter(ativo=True)
+        context['excursoes'] = self.object.excursoes.all()
+        return context
+
+class EventoCreateView(CreateView):
+    model = Evento
+    fields = ['nome', 'slug', 'data_inicio', 'data_fim', 'local', 'descricao', 'banner', 'contato_organizador']
+    template_name = 'evento_form.html'
+    success_url = reverse_lazy('evento_list')
+
+class EventoUpdateView(UpdateView):
+    model = Evento
+    fields = ['nome', 'slug', 'data_inicio', 'data_fim', 'local', 'descricao', 'banner', 'contato_organizador']
+    template_name = 'evento_form.html'
+    success_url = reverse_lazy('evento_list')
