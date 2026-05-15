@@ -6,6 +6,8 @@ import uuid
 
 class Evento(models.Model):
     nome = models.CharField(max_length=200, verbose_name="Nome do Evento")
+    # ADICIONADO: Requisito de URLs amigáveis (Questão 6)
+    slug = models.SlugField(unique=True, blank=True, max_length=250, verbose_name="Slug (URL Amigável)")
     data_inicio = models.DateTimeField(verbose_name="Início do Evento")
     data_fim = models.DateTimeField(verbose_name="Término do Evento")
     local = models.CharField(max_length=255, verbose_name="Local/Endereço")
@@ -63,10 +65,6 @@ class Pedido(models.Model):
     total_pedido = models.DecimalField(max_digits=10, decimal_places=2, default=0)
 
     def pode_cancelar(self, data_evento_inicio):
-        """
-        Lógica: Pode cancelar em até 3 dias após o pagamento, 
-        desde que não falte menos de 3 dias para o evento.
-        """
         if not self.data_pagamento or self.status == 'C':
             return False
             
@@ -81,27 +79,23 @@ class Pedido(models.Model):
 
 class ItemPedido(models.Model):
     pedido = models.ForeignKey(Pedido, on_delete=models.CASCADE, related_name='itens')
-    # Pode ser um ingresso de lote OU uma vaga em excursão
     lote = models.ForeignKey(Lote, on_delete=models.SET_NULL, null=True, blank=True)
     excursao = models.ForeignKey(Excursao, on_delete=models.SET_NULL, null=True, blank=True)
     
-    # Dados de quem vai usar (para a Lista de Passageiros/Ingresso)
     nome_participante = models.CharField(max_length=150)
     cpf_participante = models.CharField(max_length=14)
     email_participante = models.EmailField()
-    qr_code_key = models.CharField(max_length=100, unique=True, null=True, blank=True)
 
     def __str__(self):
         tipo = "Ingresso" if self.lote else "Excursão"
         return f"{tipo}: {self.nome_participante}"
 
 class IngressoGerado(models.Model):
-    # Identificador Único (Será usado para gerar o QR Code futuramente)
     codigo_autenticacao = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     
-    pedido = models.ForeignKey('Pedido', on_delete=models.CASCADE, related_name='ingressos')
-    evento = models.ForeignKey('Evento', on_delete=models.CASCADE)
-    lote = models.ForeignKey('Lote', on_delete=models.PROTECT)
+    item_pedido = models.OneToOneField(ItemPedido, on_delete=models.CASCADE, related_name='ingresso_digital', null=True, blank=True)
+    evento = models.ForeignKey(Evento, on_delete=models.CASCADE)
+    lote = models.ForeignKey(Lote, on_delete=models.PROTECT)
 
     nome_participante = models.CharField(max_length=100)
     cpf_participante = models.CharField(max_length=14)
